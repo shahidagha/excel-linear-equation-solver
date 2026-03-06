@@ -11,160 +11,18 @@ Public Function NextEq() As String
 End Function
 
 
-Public Function GetGlobalLCM(fs1 As FractionSurd, _
-                             fs2 As FractionSurd, _
-                             fs3 As FractionSurd) As Long
-    
-    Dim d1 As Long, d2 As Long, d3 As Long
-    
-    d1 = GetSquaredDenominator(fs1)
-    d2 = GetSquaredDenominator(fs2)
-    d3 = GetSquaredDenominator(fs3)
-    
-    GetGlobalLCM = lcm(lcm(d1, d2), d3)
-    
-End Function
-
-Public Function GetLCMSurdMultiplier(globalLCM As Long) As Surd
-    
-    GetLCMSurdMultiplier = SquareRootToSurd(globalLCM)
-    
-End Function
-Public Function ConvertToFinalSurd(fs As FractionSurd, _
-                                   globalLCM As Long, _
-                                   ByRef result As Surd) As Boolean
-
-    Dim numeratorSquared As Long
-    Dim denominatorSquared As Long
-    Dim tempResult As Long
-    
-    ' (mvn)^2 = m^2 * n
-    numeratorSquared = (fs.num.coeff * fs.num.coeff) * fs.num.radicand
-    denominatorSquared = (fs.den.coeff * fs.den.coeff) * fs.den.radicand
-    
-    ' Multiply numerator by global LCM (squared domain)
-    numeratorSquared = numeratorSquared * globalLCM
-    
-    ' Safe exact division check
-    If Not SafeDivide(numeratorSquared, denominatorSquared, tempResult) Then
-        ConvertToFinalSurd = False
-        Exit Function
-    End If
-    
-    ' Convert back from squared domain
-    result = SquareRootToSurd(tempResult)
-    
-    ConvertToFinalSurd = True
-
-End Function
-
-Public Function GetFinalGCD(s1 As Surd, _
-                            s2 As Surd, _
-                            s3 As Surd) As Long
-    
-    Dim v1 As Long, v2 As Long, v3 As Long
-    
-    v1 = GetSurdSquaredValue(s1)
-    v2 = GetSurdSquaredValue(s2)
-    v3 = GetSurdSquaredValue(s3)
-    
-    GetFinalGCD = GCD(GCD(v1, v2), v3)
-    
-End Function
 
 
-Public Function ProcessEquation(frm As Object, prefix As String, _
-                                ByRef final1 As Surd, _
-                                ByRef final2 As Surd, _
-                                ByRef final3 As Surd) As Boolean
-    
-    Dim fs1 As FractionSurd
-    Dim fs2 As FractionSurd
-    Dim fs3 As FractionSurd
-    
-    Dim globalLCM As Long
-    Dim multiplier As Surd
-    
-    fs1 = GetFractionSurdFromControls(frm, 1, prefix)
-    fs2 = GetFractionSurdFromControls(frm, 2, prefix)
-    fs3 = GetFractionSurdFromControls(frm, 3, prefix)
-    
-    If Not ValidateFractionSurd(fs1) _
-    Or Not ValidateFractionSurd(fs2) _
-    Or Not ValidateFractionSurd(fs3) Then
-        
-        MsgBox "Beyond the scope of current Grade"
-        Exit Function
-    End If
-    
-    globalLCM = GetGlobalLCM(fs1, fs2, fs3)
-    
-    If globalLCM <= 0 Then
-        MsgBox "Beyond the scope of current Grade"
-        Exit Function
-    End If
-    
-    multiplier = GetLCMSurdMultiplier(globalLCM)
-    
-    If Not ConvertToFinalSurd(fs1, globalLCM, final1) Then
-        MsgBox "Beyond the scope of current Grade"
-        Exit Function
-    End If
-    
-    If Not ConvertToFinalSurd(fs2, globalLCM, final2) Then
-        MsgBox "Beyond the scope of current Grade"
-        Exit Function
-    End If
-    
-    If Not ConvertToFinalSurd(fs3, globalLCM, final3) Then
-        MsgBox "Beyond the scope of current Grade"
-        Exit Function
-    End If
-    
-    If Not ReduceFinalEquation(final1, final2, final3) Then
-        MsgBox "Beyond the scope of current Grade"
-        Exit Function
-    End If
-    
-    ProcessEquation = True
-    
-End Function
 
 
-Public Function SafeDivide(dividend As Long, _
-                           divisor As Long, _
-                           ByRef result As Long) As Boolean
-    
-    If divisor = 0 Then
-        SafeDivide = False
-        Exit Function
-    End If
-    
-    If dividend Mod divisor <> 0 Then
-        SafeDivide = False
-        Exit Function
-    End If
-    
-    result = dividend \ divisor
-    SafeDivide = True
-    
-End Function
-Public Function ValidateFractionSurd(fs As FractionSurd) As Boolean
 
-    ' Denominator coefficient cannot be zero
-    If fs.den.coeff = 0 Then Exit Function
-    
-    ' Radicands must be positive
-    If fs.den.radicand <= 0 Then Exit Function
-    If fs.num.radicand <= 0 Then Exit Function
-    
-    ' Radicands should not be zero
-    If fs.den.radicand = 0 Then Exit Function
-    If fs.num.radicand = 0 Then Exit Function
-    
-    ValidateFractionSurd = True
 
-End Function
+
+
+
+
+
+
 
 
 ' Recursive search helper
@@ -566,21 +424,11 @@ End Function
 
 
 
-Public Function RemoveLeadingPlus(txt As String) As String
-    If left(Trim(txt), 1) = "+" Then
-        RemoveLeadingPlus = Mid(Trim(txt), 2)
-    Else
-        RemoveLeadingPlus = txt
-    End If
-End Function
 
 
 
 
-Public Function BuildSurd(c As String, r As String) As String
-    Dim vC As String: vC = IIf(c = "", "1", c): Dim vr As String: vr = IIf(r = "", "1", r)
-    If vr = "1" Then BuildSurd = vC Else BuildSurd = IIf(vC = "1", "", vC) & "\sqrt{" & vr & "}"
-End Function
+
 
 
 
@@ -792,21 +640,7 @@ Public Sub CopyToClipboard(txt As String)
 End Sub
 
 
-Public Function CleanLeadingPlus(ByVal s As String, _
-                                 ByVal isFirst As Boolean) As String
 
-    s = Trim(s)
-
-    If isFirst Then
-        If left(s, 2) = "+ " Then
-            CleanLeadingPlus = Mid(s, 3)
-            Exit Function
-        End If
-    End If
-
-    CleanLeadingPlus = s
-
-End Function
 
 ' 3. Formatting: Converts string coefficient to LaTeX term
 
@@ -959,54 +793,11 @@ End Function
 
 
 
-Public Function CreateStandardForm(a As FractionSurd, _
-                                   b As FractionSurd, _
-                                   c As FractionSurd) As StandardForm
-
-    Dim sf As StandardForm
-    
-    sf.aCoeff = a
-    sf.bCoeff = b
-    sf.constCoeff = c
-    
-    CreateStandardForm = sf
-
-End Function
-
-
-
-Public Function MultiplyEquation(sf As StandardForm, _
-                                 k As Long) As StandardForm
-
-    Dim result As StandardForm
-
-    result.aCoeff = MultiplyFractionByInteger(sf.aCoeff, k)
-    result.bCoeff = MultiplyFractionByInteger(sf.bCoeff, k)
-    result.constCoeff = MultiplyFractionByInteger(sf.constCoeff, k)
-
-    MultiplyEquation = result
-
-End Function
 
 
 
 
 
-
-
-Public Function ZeroFraction() As FractionSurd
-
-    Dim z As FractionSurd
-    
-    z.num.coeff = 0
-    z.num.radicand = 1
-    
-    z.den.coeff = 1
-    z.den.radicand = 1
-    
-    ZeroFraction = z
-
-End Function
 
 
 
@@ -1042,28 +833,7 @@ Public Function ReadStandardForm(ws As Worksheet, _
     ReadStandardForm = sf
 
 End Function
-Public Function BuildCommonInitialSteps(sf1 As StandardForm, _
-                                        sf2 As StandardForm, _
-                                        var1 As String, _
-                                        var2 As String) As String
 
-    Dim latex As String
-
-    latex = ""
-
-    latex = latex & _
-        "& " & BuildLinearTermLatex(sf1.aCoeff, var1) & _
-        " + " & BuildLinearTermLatex(sf1.bCoeff, var2) & _
-        " = " & FormatFractionSurdToLatex(sf1.constCoeff) & " \\[6pt]"
-
-    latex = latex & _
-        "& " & BuildLinearTermLatex(sf2.aCoeff, var1) & _
-        " + " & BuildLinearTermLatex(sf2.bCoeff, var2) & _
-        " = " & FormatFractionSurdToLatex(sf2.constCoeff) & " \\[10pt]"
-
-    BuildCommonInitialSteps = latex
-
-End Function
 
 Public Function ReadFractionSurd(ws As Worksheet, _
                                  r As Long, _

@@ -196,3 +196,43 @@ Public Function ReduceSurdByGCD(s As Surd, _
     
 End Function
 
+Public Function CreateStandardForm(a As FractionSurd, _
+                                   b As FractionSurd, _
+                                   c As FractionSurd) As StandardForm
+
+    Dim sf As StandardForm
+    
+    sf.aCoeff = a
+    sf.bCoeff = b
+    sf.constCoeff = c
+    
+    CreateStandardForm = sf
+
+End Function
+Public Function MultiplyEquation(sf As StandardForm, _
+                                 k As Long) As StandardForm
+
+    Dim result As StandardForm
+
+    result.aCoeff = MultiplyFractionByInteger(sf.aCoeff, k)
+    result.bCoeff = MultiplyFractionByInteger(sf.bCoeff, k)
+    result.constCoeff = MultiplyFractionByInteger(sf.constCoeff, k)
+
+    MultiplyEquation = result
+
+End Function
+
+Public Function ZeroFraction() As FractionSurd
+
+    Dim z As FractionSurd
+    
+    z.num.coeff = 0
+    z.num.radicand = 1
+    
+    z.den.coeff = 1
+    z.den.radicand = 1
+    
+    ZeroFraction = z
+
+End Function
+
