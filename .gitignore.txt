@@ -1,0 +1,19 @@
+# Compiled binaries
+*.exe
+*.dll
+*.ocx
+
+# Build artifacts
+*.obj
+*.lib
+*.exp
+*.pdb
+
+# Project state and temporary files
+*.vbw
+*.log
+*.tmp
+*.bak
+
+# Personal/IDE files
+*.user
